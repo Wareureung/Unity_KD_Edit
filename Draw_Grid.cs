@@ -52,6 +52,9 @@ public class Draw_Grid : MonoBehaviour
         {
             hmp.px = vx;
             hmp.py = vy;
+            //for_ins_obj = Instantiate(obj_tile, new Vector2(vx, vy), Quaternion.identity);
+            //for_ins_obj.transform.parent = GameObject.Find("Base_Ground").transform;            
+            //hash_map_info.Add(hmp, 1);
             Add_New_Block(hmp.px, hmp.py);
 
             //x축 생성 | (0,0)기준 오른쪽
@@ -62,6 +65,9 @@ public class Draw_Grid : MonoBehaviour
             {
                 hmp.px = vx + qx;
                 hmp.py = vy + qy;
+                //for_ins_obj = Instantiate(obj_tile, new Vector2(hmp.px, hmp.py), Quaternion.identity);
+                //for_ins_obj.transform.parent = GameObject.Find("Base_Ground").transform;
+                //hash_map_info.Add(hmp, 1);
                 Add_New_Block(hmp.px, hmp.py);
                 qx += 0.5f;
                 qy += 0.25f;
