@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Edit_Mouse : MonoBehaviour
 {
-    public struct Hash_Map_Pos
+    public struct Map_Pos
     {
         public float px;
         public float py;
@@ -34,7 +34,7 @@ public class Edit_Mouse : MonoBehaviour
         if (edit_state)
         {
             GameObject get_block_info = GameObject.Find("Draw_Grid");
-            Hash_Map_Pos hmp;
+            int mx, my = 0;
 
             MousePosition = Cam.ScreenToWorldPoint(Input.mousePosition);
             edit_pivot.transform.position = new Vector3(MousePosition.x, MousePosition.y, 0);
@@ -48,9 +48,9 @@ public class Edit_Mouse : MonoBehaviour
                 Debug.DrawRay(ray.origin, ray.direction * 100f, Color.green, 0.3f);
                 if (hit.collider != null && hit.collider.tag != "edit_block")
                 {
-                    hmp.px = hit.collider.transform.position.x;
-                    hmp.py = hit.collider.transform.position.y;
-                    get_block_info.GetComponent<Draw_Grid>().Remove_Block(hmp.px, hmp.py);
+                    mx = hit.collider.GetComponent<Ground_Data>().block_num.nx;
+                    my = hit.collider.GetComponent<Ground_Data>().block_num.ny;
+                    get_block_info.GetComponent<Draw_Grid>().Remove_Block(mx, my);
                     Destroy(hit.transform.gameObject);
                 }
             }
@@ -74,6 +74,8 @@ public class Edit_Mouse : MonoBehaviour
 
                 //충돌 블럭 정보 받아오기
                 Vector3 edit_new_block;
+                float px, py = 0;
+                int numx, numy = 0;
 
                 //구분해서 생성
                 switch (edit_connect_num)
@@ -81,38 +83,46 @@ public class Edit_Mouse : MonoBehaviour
                     //right top
                     case 0:
                         edit_new_block = edit_connect[0].GetComponent<Edit_Trigger_Check>().block_pos;
-                        hmp.px = edit_new_block.x - 0.5f;
-                        hmp.py = edit_new_block.y - 0.25f;
+                        numx = edit_connect[0].GetComponent<Edit_Trigger_Check>().block_num.nx - 1;
+                        numy = edit_connect[0].GetComponent<Edit_Trigger_Check>().block_num.ny;
+                        px = edit_new_block.x - 0.5f;
+                        py = edit_new_block.y - 0.25f;
 
-                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Value(hmp.px, hmp.py))
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(hmp.px, hmp.py);
+                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
                         break;
                     //right bottom
                     case 1:
                         edit_new_block = edit_connect[1].GetComponent<Edit_Trigger_Check>().block_pos;
-                        hmp.px = edit_new_block.x - 0.5f;
-                        hmp.py = edit_new_block.y + 0.25f;
+                        numx = edit_connect[1].GetComponent<Edit_Trigger_Check>().block_num.nx;
+                        numy = edit_connect[1].GetComponent<Edit_Trigger_Check>().block_num.ny + 1;
+                        px = edit_new_block.x - 0.5f;
+                        py = edit_new_block.y + 0.25f;
 
-                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Value(hmp.px, hmp.py))
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(hmp.px, hmp.py);
+                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
                         break;
                     //left top
                     case 2:
                         edit_new_block = edit_connect[2].GetComponent<Edit_Trigger_Check>().block_pos;
-                        hmp.px = edit_new_block.x + 0.5f;
-                        hmp.py = edit_new_block.y - 0.25f;
+                        numx = edit_connect[2].GetComponent<Edit_Trigger_Check>().block_num.nx;
+                        numy = edit_connect[2].GetComponent<Edit_Trigger_Check>().block_num.ny - 1;
+                        px = edit_new_block.x + 0.5f;
+                        py = edit_new_block.y - 0.25f;
 
-                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Value(hmp.px, hmp.py))
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(hmp.px, hmp.py);
+                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
                         break;
                     //left bottom
                     case 3:
                         edit_new_block = edit_connect[3].GetComponent<Edit_Trigger_Check>().block_pos;
-                        hmp.px = edit_new_block.x + 0.5f;
-                        hmp.py = edit_new_block.y + 0.25f;
+                        numx = edit_connect[3].GetComponent<Edit_Trigger_Check>().block_num.nx + 1;
+                        numy = edit_connect[3].GetComponent<Edit_Trigger_Check>().block_num.ny;
+                        px = edit_new_block.x + 0.5f;
+                        py = edit_new_block.y + 0.25f;
 
-                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Value(hmp.px, hmp.py))
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(hmp.px, hmp.py);
+                        if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
                         break;
                 }
             }
