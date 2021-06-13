@@ -102,8 +102,7 @@ public class Map_Editor : EditorWindow
         make_state = true;
 
         dg_obj = GameObject.Find("Draw_Grid");
-        dg_obj.GetComponent<Draw_Grid>().value_x = int.Parse(value_x);
-        dg_obj.GetComponent<Draw_Grid>().value_y = int.Parse(value_y);
+        dg_obj.GetComponent<Draw_Grid>().Set_Limit_Grid(int.Parse(value_x), int.Parse(value_y));
         dg_obj.GetComponent<Draw_Grid>().obj_tile = obj_tile;
         dg_obj.GetComponent<Draw_Grid>().Make_Ground();
     }
@@ -121,7 +120,7 @@ public class Map_Editor : EditorWindow
 
         //데이터 지우기
         GameObject obj_info = GameObject.Find("Draw_Grid");
-        obj_info.GetComponent<Draw_Grid>().hash_map_info.Clear();
+        obj_info.GetComponent<Draw_Grid>().map_info.Clear();
     }
 
     private void Draw_Grid()
