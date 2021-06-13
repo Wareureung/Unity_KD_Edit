@@ -9,14 +9,22 @@ public class Draw_Grid : MonoBehaviour
         BASE = 0
     }
 
-    public struct Hash_Map_Pos
+    public struct Map_Pos
     {
         public float px;
         public float py;
     }
+    public struct Map_Num
+    {
+        public int nx;
+        public int ny;
+    }
+    
 
-    public Dictionary<Hash_Map_Pos, int> hash_map_info = new Dictionary<Hash_Map_Pos, int>();
-    public Hash_Map_Pos hmp;
+    public Dictionary<Map_Num, Map_Pos> map_info = new Dictionary<Map_Num, Map_Pos>();
+    public Map_Pos hmp;
+    public Map_Pos origin_mp;
+    public Map_Num map_num;
     public GameObject for_ins_obj;
 
     public GameObject obj_tile;
@@ -25,10 +33,11 @@ public class Draw_Grid : MonoBehaviour
     public GameObject[] obj_grid_right;
     public int value_x;
     public int value_y;
+    bool check_make_state;
 
     void Start()
     {
-
+        check_make_state = false;
     }
 
     void Update()
@@ -39,6 +48,8 @@ public class Draw_Grid : MonoBehaviour
     //바닥 만들기
     public void Make_Ground()
     {
+        check_make_state = true;
+
         if (value_x > 100)
             value_x = 100;
         if (value_y > 100)
@@ -52,23 +63,24 @@ public class Draw_Grid : MonoBehaviour
         {
             hmp.px = vx;
             hmp.py = vy;
-            Add_New_Block(hmp.px, hmp.py);
+            Add_New_Block(hmp.px, hmp.py, 0, i);
 
             //x축 생성 | (0,0)기준 오른쪽
             float qx = 0.5f;
             float qy = 0.25f;
 
-            for (int j = 0; j < value_x - 1; j++)
+            for (int j = 1; j < value_x; j++)
             {
                 hmp.px = vx + qx;
                 hmp.py = vy + qy;
-                Add_New_Block(hmp.px, hmp.py);
+                Add_New_Block(hmp.px, hmp.py, j, i);
                 qx += 0.5f;
                 qy += 0.25f;
             }
             vx -= 0.5f;
             vy += 0.25f;
         }
+        check_make_state = false;
     }
 
     //그리드 그리기
@@ -77,7 +89,7 @@ public class Draw_Grid : MonoBehaviour
         obj_grid_left = new GameObject[value_x + 1];
         obj_grid_right = new GameObject[value_y + 1];
 
-        //왼쪽사선
+        //왼쪽상단사선
         float startPos_x = 0;
         float startPos_y = 0;
         float endPos_x = -0.5f * (value_y - 1);
@@ -95,7 +107,7 @@ public class Draw_Grid : MonoBehaviour
             endPos_y += 0.25f;
         }
 
-        //오른쪽사선
+        //오른쪽상단사선
         startPos_x = 0;
         startPos_y = 0;
         endPos_x = 0.5f * (value_x - 1);
@@ -114,34 +126,103 @@ public class Draw_Grid : MonoBehaviour
         }
     }
 
-    public void Add_New_Block(float a, float b)
+    //입력값으로 바닥 자동생성
+    public void Add_New_Block(float hit_block_x, float hit_block_y, int map_num_x, int map_num_y)
     {
-        hmp.px = a;
-        hmp.py = b;
-        if (!Check_Value(hmp.px, hmp.py))
-        {
-            for_ins_obj = Instantiate(obj_tile, new Vector2(a, b), Quaternion.identity);
-            for_ins_obj.transform.parent = GameObject.Find("Base_Ground").transform;
+        hmp.px = hit_block_x;
+        hmp.py = hit_block_y;
 
-            hash_map_info.Add(hmp, 1);
+        map_num.nx = map_num_x;
+        map_num.ny = map_num_y;
+
+        if (!Check_Key(map_num.nx, map_num.ny))
+        {
+            for_ins_obj = Instantiate(obj_tile, new Vector2(hit_block_x, hit_block_y), Quaternion.identity);
+            for_ins_obj.transform.parent = GameObject.Find("Base_Ground").transform;
+            for_ins_obj.GetComponent<Ground_Data>().Set_Block_Number(map_num_x, map_num_y);
+
+            map_info.Add(map_num, hmp);
         }
     }
 
-    public void Remove_Block(float a, float b)
+    //마우스 클릭으로 바닥 추가생성
+    public void Add_New_Block(float hit_block_x, float hit_block_y, float hit_block_origin_x, float hit_block_origin_y, int hit_block_num_x, int hit_block_num_y)
     {
-        hmp.px = a;
-        hmp.py = b;
-        hash_map_info.Remove(hmp);
+        hmp.px = hit_block_x;
+        hmp.py = hit_block_y;
+
+        origin_mp.px = hit_block_origin_x;
+        origin_mp.py = hit_block_origin_y;
+
+        ////좌측하단
+        ////x - 1, y == y
+        //if (origin_mp.px - hmp.px > 0 && origin_mp.py - hmp.py > 0)
+        //{
+        //    map_num.nx = hit_block_num_x - 1;
+        //    map_num.ny = hit_block_num_y;
+        //}
+        ////우측상단
+        ////x + 1, y == y
+        //else if (origin_mp.px - hmp.px < 0 && origin_mp.py - hmp.py < 0)
+        //{
+        //    map_num.nx = hit_block_num_x + 1;
+        //    map_num.ny = hit_block_num_y;
+        //}
+        ////우측하단
+        ////x == x, y - 1
+        //else if (origin_mp.px - hmp.px < 0 && origin_mp.py - hmp.py > 0)
+        //{
+        //    map_num.nx = hit_block_num_x;
+        //    map_num.ny = hit_block_num_y - 1;
+        //}
+        ////좌측상단
+        ////x == x, y + 1
+        //else if (origin_mp.px - hmp.px > 0 && origin_mp.py - hmp.py < 0)
+        //{
+        //    map_num.nx = hit_block_num_x;
+        //    map_num.ny = hit_block_num_y + 1;
+        //}
+
+        map_num.nx = hit_block_num_x;
+        map_num.ny = hit_block_num_y;
+
+        if (map_num.nx >= value_x)
+            value_x = map_num.nx + 1;
+        if (map_num.ny >= value_y)
+            value_y = map_num.ny + 1;        
+
+        //중복키 확인후 생성
+        if (!Check_Key(map_num.nx, map_num.ny))
+        {
+            for_ins_obj = Instantiate(obj_tile, new Vector2(hit_block_x, hit_block_y), Quaternion.identity);
+            for_ins_obj.transform.parent = GameObject.Find("Base_Ground").transform;
+            for_ins_obj.GetComponent<Ground_Data>().Set_Block_Number(map_num.nx, map_num.ny);
+
+            map_info.Add(map_num, hmp);
+        }
     }
 
-    public bool Check_Value(float a, float b)
+    public void Remove_Block(int a, int b)
     {
-        hmp.px = a;
-        hmp.py = b;
+        map_num.nx = a;
+        map_num.ny = b;
+        map_info.Remove(map_num);
+    }
 
-        if (hash_map_info.ContainsKey(hmp))
+    public bool Check_Key(int a, int b)
+    {
+        map_num.nx = a;
+        map_num.ny = b;
+
+        if (map_info.ContainsKey(map_num))
             return true;
         else
             return false;
+    }
+
+    public void Set_Limit_Grid(int a, int b)
+    {
+        value_x = a;
+        value_y = b;
     }
 }
