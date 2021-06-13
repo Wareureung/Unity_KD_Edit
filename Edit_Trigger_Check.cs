@@ -4,16 +4,21 @@ using UnityEngine;
 
 public class Edit_Trigger_Check : MonoBehaviour
 {
+    public struct Map_Num
+    {
+        public int nx;
+        public int ny;
+    }
+    
     public bool trigger_check = false;
     public Vector3 block_pos;
+    public Map_Num block_num;
 
-    // Start is called before the first frame update
     void Start()
     {
 
     }
 
-    // Update is called once per frame
     void Update()
     {
 
@@ -23,17 +28,21 @@ public class Edit_Trigger_Check : MonoBehaviour
     {
         trigger_check = true;
         block_pos = collision.transform.position;
+        block_num.nx = collision.GetComponent<Ground_Data>().block_num.nx;
+        block_num.ny = collision.GetComponent<Ground_Data>().block_num.ny;
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         trigger_check = true;
         block_pos = collision.transform.position;
+        block_num.nx = collision.GetComponent<Ground_Data>().block_num.nx;
+        block_num.ny = collision.GetComponent<Ground_Data>().block_num.ny;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         trigger_check = false;
-        block_pos = Vector3.zero;
+        block_pos = Vector3.zero;        
     }
 }
