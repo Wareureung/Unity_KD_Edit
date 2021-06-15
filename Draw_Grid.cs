@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;  //중복제거
+using System;       //배열 ReSize
 
 public class Draw_Grid : MonoBehaviour
 {
@@ -19,7 +21,24 @@ public class Draw_Grid : MonoBehaviour
         public int nx;
         public int ny;
     }
-    
+
+    //우선순위 큐 만들기 위한 구조체
+    struct Priority_Queue
+    {
+        public int size_data;
+        public int[] array_num;
+    }
+
+    Priority_Queue pq_x = new Priority_Queue
+    {
+        size_data = 0,
+        array_num = new int[101]
+    };
+    Priority_Queue pq_y = new Priority_Queue
+    {
+        size_data = 0,
+        array_num = new int[101]
+    };
 
     public Dictionary<Map_Num, Map_Pos> map_info = new Dictionary<Map_Num, Map_Pos>();
     public Map_Pos hmp;
@@ -45,6 +64,44 @@ public class Draw_Grid : MonoBehaviour
 
     }
 
+    int Compare_Pq_Value(int input, int array_value)
+    {
+        return input - array_value;
+    }
+
+
+    void Pq_Insert(ref Priority_Queue pq, int data)
+    {
+        int index = pq.size_data + 1;
+
+        while (index != 1)
+        {
+            if (Compare_Pq_Value(data, pq.array_num[index / 2]) > 0)
+            {
+                pq.array_num[index] = pq.array_num[index / 2];
+                index /= 2;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        pq.array_num[index] = data;
+        pq.size_data += 1;
+    }
+
+    void Pq_Delete(ref Priority_Queue pq)
+    {
+        int root_node_value = pq.array_num[1];
+        int last_node_value = pq.array_num[pq.size_data];
+
+        int pnode = 1;
+        int cnode;
+
+    }
+
+
     //바닥 만들기
     public void Make_Ground()
     {
@@ -64,6 +121,7 @@ public class Draw_Grid : MonoBehaviour
             hmp.px = vx;
             hmp.py = vy;
             Add_New_Block(hmp.px, hmp.py, 0, i);
+            Pq_Insert(ref pq_x, i + 1);
 
             //x축 생성 | (0,0)기준 오른쪽
             float qx = 0.5f;
@@ -74,12 +132,17 @@ public class Draw_Grid : MonoBehaviour
                 hmp.px = vx + qx;
                 hmp.py = vy + qy;
                 Add_New_Block(hmp.px, hmp.py, j, i);
+                Pq_Insert(ref pq_y, j);
                 qx += 0.5f;
                 qy += 0.25f;
             }
             vx -= 0.5f;
             vy += 0.25f;
         }
+        //중복제거 && ReSize
+        DelDuplication_ReSize(ref pq_x);
+        DelDuplication_ReSize(ref pq_y);
+
         check_make_state = false;
     }
 
@@ -187,9 +250,15 @@ public class Draw_Grid : MonoBehaviour
         map_num.ny = hit_block_num_y;
 
         if (map_num.nx >= value_x)
+        {
             value_x = map_num.nx + 1;
+            //max_x.Push(value_x);
+        }
         if (map_num.ny >= value_y)
-            value_y = map_num.ny + 1;        
+        {
+            value_y = map_num.ny + 1;
+            //max_y.Push(value_y);
+        }
 
         //중복키 확인후 생성
         if (!Check_Key(map_num.nx, map_num.ny))
@@ -199,6 +268,12 @@ public class Draw_Grid : MonoBehaviour
             for_ins_obj.GetComponent<Ground_Data>().Set_Block_Number(map_num.nx, map_num.ny);
 
             map_info.Add(map_num, hmp);
+
+            //그리드 최신화값 입력
+            Pq_Insert(ref pq_x, map_num.nx);
+            Pq_Insert(ref pq_y, map_num.ny);
+            DelDuplication_ReSize(ref pq_x);
+            DelDuplication_ReSize(ref pq_y);
         }
     }
 
@@ -206,6 +281,7 @@ public class Draw_Grid : MonoBehaviour
     {
         map_num.nx = a;
         map_num.ny = b;
+
         map_info.Remove(map_num);
     }
 
@@ -224,5 +300,11 @@ public class Draw_Grid : MonoBehaviour
     {
         value_x = a;
         value_y = b;
+    }
+
+    void DelDuplication_ReSize(ref Priority_Queue pq)
+    {
+        pq.array_num = pq.array_num.Distinct().ToArray();
+        Array.Resize(ref pq.array_num, pq.array_num.Length + (101 - pq.array_num.Length));
     }
 }
