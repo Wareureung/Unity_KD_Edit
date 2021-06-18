@@ -121,6 +121,7 @@ public class Map_Editor : EditorWindow
         //데이터 지우기
         GameObject obj_info = GameObject.Find("Draw_Grid");
         obj_info.GetComponent<Draw_Grid>().map_info.Clear();
+        obj_info.GetComponent<Draw_Grid>().ReSet_Value();
     }
 
     private void Draw_Grid()

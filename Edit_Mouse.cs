@@ -89,7 +89,7 @@ public class Edit_Mouse : MonoBehaviour
                         py = edit_new_block.y - 0.25f;
 
                         if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, numx + 1, numy, numx, numy);
                         break;
                     //right bottom
                     case 1:
@@ -100,7 +100,7 @@ public class Edit_Mouse : MonoBehaviour
                         py = edit_new_block.y + 0.25f;
 
                         if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, numx, numy - 1, numx, numy);
                         break;
                     //left top
                     case 2:
@@ -111,7 +111,7 @@ public class Edit_Mouse : MonoBehaviour
                         py = edit_new_block.y - 0.25f;
 
                         if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, numx, numy+1, numx, numy);
                         break;
                     //left bottom
                     case 3:
@@ -122,7 +122,7 @@ public class Edit_Mouse : MonoBehaviour
                         py = edit_new_block.y + 0.25f;
 
                         if (!get_block_info.GetComponent<Draw_Grid>().Check_Key(numx, numy) && numx >= 0 && numy >= 0)
-                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, edit_new_block.x, edit_new_block.y, numx, numy);
+                            get_block_info.GetComponent<Draw_Grid>().Add_New_Block(px, py, numx - 1, numy, numx, numy);
                         break;
                 }
             }
