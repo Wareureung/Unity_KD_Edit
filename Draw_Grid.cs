@@ -33,24 +33,24 @@ public class Draw_Grid : MonoBehaviour
     Priority_Queue pq_x = new Priority_Queue
     {
         size_data = 0,
-        array_num = new int[101]
+        array_num = new int[10001]
     };
     Priority_Queue pq_y = new Priority_Queue
     {
         size_data = 0,
-        array_num = new int[101]
+        array_num = new int[10001]
     };
 
     //그리드 새로그릴때 최신화용
     Priority_Queue pq_del_x = new Priority_Queue
     {
         size_data = 0,
-        array_num = new int[101]
+        array_num = new int[10001]
     };
     Priority_Queue pq_del_y = new Priority_Queue
     {
         size_data = 0,
-        array_num = new int[101]
+        array_num = new int[10001]
     };
 
     public Dictionary<Map_Num, Map_Pos> map_info = new Dictionary<Map_Num, Map_Pos>();
@@ -215,7 +215,7 @@ public class Draw_Grid : MonoBehaviour
             }
             else
                 break;
-        }        
+        }
 
         GameObject[] obj_grid_left = new GameObject[pq_x.array_num[1] + 2];
         GameObject[] obj_grid_right = new GameObject[pq_y.array_num[1] + 2];
@@ -320,7 +320,7 @@ public class Draw_Grid : MonoBehaviour
         {
             if (Array.IndexOf(pq_y.array_num, b + 1) >= 0)
             {
-                Pq_Insert(ref pq_del_y, b + 1);            
+                Pq_Insert(ref pq_del_y, b + 1);   
             }
                 //BFSFindValue(ref pq_y, b + 1);
         }
